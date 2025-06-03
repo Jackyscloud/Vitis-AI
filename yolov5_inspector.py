@@ -41,7 +41,7 @@ def parse_args():
     p.add_argument(
         "--target",
         type=str,
-        required=True,
+        default="DPUCZDX8G_ISA1_B4096",
         help="NNDCT target name for your DPU (e.g. DPUCZDX8G_ISA0)."
     )
     p.add_argument(
