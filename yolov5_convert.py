@@ -69,16 +69,18 @@ def replace_softmax_with_noop(m: nn.Module):
             replace_softmax_with_noop(child)
 
 
-# 3. 把整個模型轉為 NHWC 佈局
+# 3. 把整個模型裡的 rank >=4 Tensor（parameters 和 buffers）轉為 channels_last
 def convert_model_to_nhwc(model: nn.Module):
     model.eval()
+    # 只針對參數做 channels_last 轉換
     for p in model.parameters():
         if p.ndimension() >= 4:
             p.data = p.data.to(memory_format=torch.channels_last)
+    # 只針對 buffer 做同樣轉換
     for b in model.buffers():
         if b.ndimension() >= 4:
             b.data = b.data.to(memory_format=torch.channels_last)
-    model.to(memory_format=torch.channels_last)
+    # 後面不再呼叫 model.to(memory_format=…)，避免 rank<4 的 buffer/parameter 發生錯誤
     return model
 
 
@@ -104,7 +106,6 @@ def main():
             args.model,              # e.g. "yolov5s", "yolov5m", ...
             pretrained=True
         )
-        # The hub returns a wrapper whose `.model` attribute is the raw nn.Module (the Detect class).
         pt_model = yolo5_wrapper.model
 
     pt_model.to(device).eval()
@@ -114,7 +115,7 @@ def main():
     replace_sigmoid_with_hardsigmoid(pt_model)
     replace_softmax_with_noop(pt_model)
 
-    # 3. 把整個模型轉為 NHWC 佈局
+    # 3. 把整個模型裡的 rank>=4 tensor 轉為 NHWC (channels_last)
     model = convert_model_to_nhwc(pt_model)
 
     # 4. 用 NHWC 隨機輸入測試 forward
