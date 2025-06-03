@@ -137,7 +137,7 @@ def main():
     #     假设你已安装好 Vitis AI PyTorch Quantizer (nndct)
     inspector = Inspector(args.target)
 
-    inspector.inspect(pt_model, (dummy,), device=device)
+    inspector.inspect(model, (dummy,), device=device)
 
     # 5) Final status
     print("\n[INFO] Inspector report generated in directory './__inspect__/'.")
