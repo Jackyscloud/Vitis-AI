@@ -135,16 +135,17 @@ def main():
 
     # 4.5 调用 NNDCT Inspector 检查 DPU unsupported nodes
     #     假设你已安装好 Vitis AI PyTorch Quantizer (nndct)
-    inspector = Inspector(
-        model=model,
-        input_shape=[1, 3, args.img_size, args.img_size],
-        input_nodes=["images"],   # YOLOv5 hubconf 会把第一张图片 tensor 名称叫做 "images"
-        output_nodes=["output"],  # Detect head 最后输出叫 "output"
-        target=args.target
-    )
-    report = inspector.run()  # 会把不支持的节点等信息打印在屏幕上
-    inspector.save_report("inspect_report.json")
-    print("[INFO] Inspector report saved to inspect_report.json")
+    inspector = Inspector(args.target)
+
+    inspector.inspect(pt_model, (dummy,), device=device)
+
+    # 5) Final status
+    print("\n[INFO] Inspector report generated in directory './__inspect__/'.")
+    print("       ├─ inspect.json       (per-layer mapping to DPU or CPU fallback)")
+    print("       ├─ inspect.csv        (same info in CSV form)")
+    print("       └─ layerwise_debug.txt  (detailed debug log)")
+    print("[INFO] You can open inspect.json or load inspect.csv into Excel to review which layers map to DPU vs. CPU.")
+    print("[INFO] Done.")
 
 
 if __name__ == "__main__":
