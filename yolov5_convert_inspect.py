@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import argparse
+from pytorch_nndct.apis import Inspector
 
 # -------------------------
 # 1. Parser
@@ -134,7 +135,6 @@ def main():
 
     # 4.5 调用 NNDCT Inspector 检查 DPU unsupported nodes
     #     假设你已安装好 Vitis AI PyTorch Quantizer (nndct)
-    from nndct_shared.inspector import Inspector
     inspector = Inspector(
         model=model,
         input_shape=[1, 3, args.img_size, args.img_size],
