@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import torch
 import torch.nn.functional as F
+from torch.nn import Hardsigmoid
 
 
 def crop_mask(masks, boxes):
@@ -33,7 +34,7 @@ def process_mask_upsample(protos, masks_in, bboxes, shape):
     return: h, w, n
     """
     c, mh, mw = protos.shape  # CHW
-    masks = (masks_in @ protos.float().view(c, -1)).sigmoid().view(-1, mh, mw)
+    masks = (masks_in @ protos.float().view(c, -1)).Hardsigmoid().view(-1, mh, mw)
     masks = F.interpolate(masks[None], shape, mode="bilinear", align_corners=False)[0]  # CHW
     masks = crop_mask(masks, bboxes)  # CHW
     return masks.gt_(0.5)
@@ -51,7 +52,7 @@ def process_mask(protos, masks_in, bboxes, shape, upsample=False):
     """
     c, mh, mw = protos.shape  # CHW
     ih, iw = shape
-    masks = (masks_in @ protos.float().view(c, -1)).sigmoid().view(-1, mh, mw)  # CHW
+    masks = (masks_in @ protos.float().view(c, -1)).Hardsigmoid().view(-1, mh, mw)  # CHW
 
     downsampled_bboxes = bboxes.clone()
     downsampled_bboxes[:, 0] *= mw / iw
@@ -76,7 +77,7 @@ def process_mask_native(protos, masks_in, bboxes, shape):
     return: h, w, n
     """
     c, mh, mw = protos.shape  # CHW
-    masks = (masks_in @ protos.float().view(c, -1)).sigmoid().view(-1, mh, mw)
+    masks = (masks_in @ protos.float().view(c, -1)).Hardsigmoid().view(-1, mh, mw)
     gain = min(mh / shape[0], mw / shape[1])  # gain  = old / new
     pad = (mw - shape[1] * gain) / 2, (mh - shape[0] * gain) / 2  # wh padding
     top, left = int(pad[1]), int(pad[0])  # y, x

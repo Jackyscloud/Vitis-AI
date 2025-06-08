@@ -73,7 +73,7 @@ def autopad(k, p=None, d=1):
 class Conv(nn.Module):
     """Applies a convolution, batch normalization, and activation function to an input tensor in a neural network."""
 
-    default_act = nn.SiLU()  # default activation
+    default_act = nn.ReLU()  # default activation
 
     def __init__(self, c1, c2, k=1, s=1, p=None, g=1, d=1, act=True):
         """Initializes a standard convolution layer with optional batch normalization and activation."""

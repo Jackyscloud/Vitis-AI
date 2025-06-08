@@ -27,7 +27,7 @@ class Sum(nn.Module):
         """Processes input through a customizable weighted sum of `n` inputs, optionally applying learned weights."""
         y = x[0]  # no weight
         if self.weight:
-            w = torch.sigmoid(self.w) * 2
+            w = torch.nn.Hardsigmoid(self.w) * 2
             for i in self.iter:
                 y = y + x[i + 1] * w[i]
         else:
