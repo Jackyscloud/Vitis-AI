@@ -104,11 +104,11 @@ class Detect(nn.Module):
 
                 if isinstance(self, Segment):  # (boxes + masks)
                     xy, wh, conf, mask = x[i].split((2, 2, self.nc + 1, self.no - self.nc - 5), 4)
-                    xy = (xy.F.hardsigmoid() * 2 + self.grid[i]) * self.stride[i]  # xy
-                    wh = (wh.F.hardsigmoid() * 2) ** 2 * self.anchor_grid[i]  # wh
-                    y = torch.cat((xy, wh, conf.F.hardsigmoid(), mask), 4)
+                    xy = (F.hardsigmoid(xy) * 2 + self.grid[i]) * self.stride[i]  # xy
+                    wh = (F.hardsigmoid(wh) * 2) ** 2 * self.anchor_grid[i]  # wh
+                    y = torch.cat((xy, wh, F.hardsigmoid(conf), mask), 4)
                 else:  # Detect (boxes only)
-                    xy, wh, conf = x[i].F.hardsigmoid().split((2, 2, self.nc + 1), 4)
+                    xy, wh, conf = F.hardsigmoid(x[i]).split((2, 2, self.nc + 1), 4)
                     xy = (xy * 2 + self.grid[i]) * self.stride[i]  # xy
                     wh = (wh * 2) ** 2 * self.anchor_grid[i]  # wh
                     y = torch.cat((xy, wh, conf), 4)
