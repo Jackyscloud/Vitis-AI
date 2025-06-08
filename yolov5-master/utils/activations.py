@@ -16,7 +16,7 @@ class SiLU(nn.Module):
 
         https://arxiv.org/pdf/1606.08415.pdf.
         """
-        return x * torch.nn.Hardsigmoid(x)
+        return x * F.hardsigmoid(x)
 
 
 class Hardswish(nn.Module):
@@ -57,7 +57,7 @@ class MemoryEfficientMish(nn.Module):
         def backward(ctx, grad_output):
             """Computes the gradient of the Mish activation function with respect to input `x`."""
             x = ctx.saved_tensors[0]
-            sx = torch.nn.Hardsigmoid(x)
+            sx = F.hardsigmoid(x)
             fx = F.softplus(x).tanh()
             return grad_output * (fx + x * sx * (1 - fx * fx))
 
@@ -102,7 +102,7 @@ class AconC(nn.Module):
     def forward(self, x):
         """Applies AconC activation function with learnable parameters for channel-wise control on input tensor x."""
         dpx = (self.p1 - self.p2) * x
-        return dpx * torch.nn.Hardsigmoid(self.beta * dpx) + self.p2 * x
+        return dpx * F.hardsigmoid(self.beta * dpx) + self.p2 * x
 
 
 class MetaAconC(nn.Module):
@@ -129,6 +129,6 @@ class MetaAconC(nn.Module):
         y = x.mean(dim=2, keepdims=True).mean(dim=3, keepdims=True)
         # batch-size 1 bug/instabilities https://github.com/ultralytics/yolov5/issues/2891
         # beta = torch.sigmoid(self.bn2(self.fc2(self.bn1(self.fc1(y)))))  # bug/unstable
-        beta = torch.nn.Hardsigmoid(self.fc2(self.fc1(y)))  # bug patch BN layers removed
+        beta = F.hardsigmoid(self.fc2(self.fc1(y)))  # bug patch BN layers removed
         dpx = (self.p1 - self.p2) * x
-        return dpx * torch.nn.Hardsigmoid(beta * dpx) + self.p2 * x
+        return dpx * F.hardsigmoid(beta * dpx) + self.p2 * x

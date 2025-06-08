@@ -6,6 +6,7 @@ import math
 import numpy as np
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 from utils.downloads import attempt_download
 
@@ -27,7 +28,7 @@ class Sum(nn.Module):
         """Processes input through a customizable weighted sum of `n` inputs, optionally applying learned weights."""
         y = x[0]  # no weight
         if self.weight:
-            w = torch.nn.Hardsigmoid(self.w) * 2
+            w = F.hardsigmoid(self.w) * 2
             for i in self.iter:
                 y = y + x[i + 1] * w[i]
         else:

@@ -17,7 +17,7 @@ from pathlib import Path
 
 import torch
 import torch.nn as nn
-from torch.nn import Hardsigmoid
+import torch.nn.functional as F
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[1]  # YOLOv5 root directory
@@ -104,11 +104,11 @@ class Detect(nn.Module):
 
                 if isinstance(self, Segment):  # (boxes + masks)
                     xy, wh, conf, mask = x[i].split((2, 2, self.nc + 1, self.no - self.nc - 5), 4)
-                    xy = (xy.Hardsigmoid() * 2 + self.grid[i]) * self.stride[i]  # xy
-                    wh = (wh.Hardsigmoid() * 2) ** 2 * self.anchor_grid[i]  # wh
-                    y = torch.cat((xy, wh, conf.Hardsigmoid(), mask), 4)
+                    xy = (xy.F.hardsigmoid() * 2 + self.grid[i]) * self.stride[i]  # xy
+                    wh = (wh.F.hardsigmoid() * 2) ** 2 * self.anchor_grid[i]  # wh
+                    y = torch.cat((xy, wh, conf.F.hardsigmoid(), mask), 4)
                 else:  # Detect (boxes only)
-                    xy, wh, conf = x[i].Hardsigmoid().split((2, 2, self.nc + 1), 4)
+                    xy, wh, conf = x[i].F.hardsigmoid().split((2, 2, self.nc + 1), 4)
                     xy = (xy * 2 + self.grid[i]) * self.stride[i]  # xy
                     wh = (wh * 2) ** 2 * self.anchor_grid[i]  # wh
                     y = torch.cat((xy, wh, conf), 4)
