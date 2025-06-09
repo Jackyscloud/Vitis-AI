@@ -34,7 +34,6 @@ def parse_args():
     )
     return p.parse_args()
 
-
 # -------------------------
 # 2. Activation 替换
 # -------------------------
@@ -98,9 +97,10 @@ def main():
     if args.model.lower().endswith(".pt"):
         # 如果本地有 yolov5s.pt，直接加载，force_reload 确保仓库是最新的
         yolo5_wrapper = torch.hub.load(
-            'ultralytics/yolov5',
+            'yolov5-master',
             'custom',
             path=args.model,
+            source ='local',
             force_reload=True,
             trust_repo=True
         )
@@ -119,9 +119,9 @@ def main():
     pt_model.to(device).eval()
 
     # 4.2 替换不支持的 Activation: SiLU->ReLU, Sigmoid->HardSigmoid, Softmax->NoOp
-    replace_silu_with_relu(pt_model)
-    replace_sigmoid_with_hardsigmoid(pt_model)
-    replace_softmax_with_noop(pt_model)
+    #replace_silu_with_relu(pt_model)
+    #replace_sigmoid_with_hardsigmoid(pt_model)
+    #replace_softmax_with_noop(pt_model)
 
     # 4.3 转 NHWC：只对 rank>=4 的 tensor（conv weight、BN stats）做 memory_format=torch.channels_last
     model = convert_model_to_nhwc(pt_model)

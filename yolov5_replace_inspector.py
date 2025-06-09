@@ -107,7 +107,7 @@ def main():
     print(f"[INFO] Found {silu_count} nn.SiLU modules before replacement.")
 
     # 4) Replace all SiLU → ReLU
-    replace_silu_with_relu(pt_model)
+    #replace_silu_with_relu(pt_model)
 
     # 5) Count again to verify
     silu_count_after = sum(1 for m in pt_model.modules() if isinstance(m, nn.SiLU))
