@@ -68,3 +68,5 @@ def main():
     scripted.save("yolov5_hardware.pt")
 
 
+if __name__ == "__main__":
+    main()
