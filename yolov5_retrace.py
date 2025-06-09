@@ -50,7 +50,7 @@ def main():
         )
         pt_model = yolo5_wrapper.model
 
-        print(f"[INFO] Model loaded from {args.model} with {len(pt_model)} layers.")
+        print("Using local model:", args.model)
     else:
         # 直接在线加载官方 pretrained，比如 'yolov5s','yolov5m' 等
         yolo5_wrapper = torch.hub.load(
