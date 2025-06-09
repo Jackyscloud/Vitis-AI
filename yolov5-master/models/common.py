@@ -19,6 +19,7 @@ import pandas as pd
 import requests
 import torch
 import torch.nn as nn
+from typing import List
 from PIL import Image
 from torch.cuda import amp
 
@@ -448,7 +449,7 @@ class Concat(nn.Module):
         super().__init__()
         self.d = dimension
 
-    def forward(self, x):
+    def forward(self, x: List[torch.Tensor]) -> torch.Tensor:
         """Concatenates a list of tensors along a specified dimension; `x` is a list of tensors, `dimension` is an
         int.
         """
