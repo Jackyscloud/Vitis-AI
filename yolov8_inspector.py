@@ -82,7 +82,13 @@ def main():
                 .to(memory_format=torch.channels_last).to(device)
     with torch.no_grad():
         out = model(dummy)
-    print("[INFO] Forward OK, output shape:", out.shape)
+    # 3b) Handle tuple outputs from model forward
+    if isinstance(out, tuple):
+        # Use the first element’s tensor for shape
+        shape = out[0].shape
+    else:
+        shape = out.shape
+    print("[INFO] Forward OK, output shape:", shape)
 
     # 4) Instantiate and run the Inspector
     print(f"[INFO] Running NNDCT Inspector for target '{args.target}' …")
