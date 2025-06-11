@@ -69,7 +69,7 @@ def main():
     # 2) Load the YOLOv8 FP32 model via Ultralytics
     print(f"[INFO] Loading YOLOv8 model from local repo at '/Users/jacky/Desktop/Vitis-AI/yolo-V8-main' …")
     yolo_wrapper = torch.hub.load(
-        '/Users/jacky/Desktop/Vitis-AI/yolo-V8-main',
+        '/Users/jacky/Desktop/Vitis-AI/yolo-V8-main/yolo-V8-main',
         'custom',
         path=args.model,
         source='local',
