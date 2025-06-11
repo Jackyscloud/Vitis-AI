@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import sys
+sys.path.insert(0, '/Users/jacky/Desktop/Vitis-AI/yolo-V8-main/yolo-V8-main')
 """
 yolov8_inspector.py
 
@@ -66,18 +68,11 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"[INFO] Using device: {device}")
 
-    # 2) Load the YOLOv8 FP32 model via Ultralytics
-    print(f"[INFO] Loading YOLOv8 model from local repo at '/Users/jacky/Desktop/Vitis-AI/yolo-V8-main' …")
-    yolo_wrapper = torch.hub.load(
-        '/Users/jacky/Desktop/Vitis-AI/yolo-V8-main/yolo-V8-main',
-        'custom',
-        path=args.model,
-        source='local',
-        force_reload=True,
-        trust_repo=True
-    )
-    pt_model = yolo_wrapper.model      # Extract the raw torch.nn.Module
-    pt_model.to(device).eval()
+    # 2) Load the YOLOv8 FP32 model via Ultralytics API
+    print(f"[INFO] Loading YOLOv8 model via Ultralytics API from '{args.model}' …")
+    yolo_wrapper = YOLO(args.model)      # loads and wraps the model
+    pt_model = yolo_wrapper.model        # extract the raw torch.nn.Module
+    pt_model = pt_model.to(device).eval()
 
     model = convert_model_to_nhwc(pt_model)
 
